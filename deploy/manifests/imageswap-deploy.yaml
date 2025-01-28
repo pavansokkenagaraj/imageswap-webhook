@@ -20,6 +20,7 @@ spec:
       securityContext:
         runAsUser: 1898
         runAsGroup: 1898
+      restartPolicy: Always
       initContainers:
         - name: imageswap-init
           image: thewebroot/imageswap-init:v1.5.3
@@ -77,6 +78,26 @@ spec:
             mountPath: /tls
           - name: imageswap-maps
             mountPath: /app/maps
+        readinessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 5000
+            scheme: HTTPS
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthz
+            port: 5000
+            scheme: HTTPS
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5        
       volumes:
         - name: imageswap-mwc
           configMap:
